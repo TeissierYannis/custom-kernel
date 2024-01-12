@@ -1,42 +1,8 @@
-/*
- *
- * kernel.c - version 0.0.1
- * 
- */
+#include "drivers/vga.h"
+#include "drivers/keyboard.h"
 
-#define WHITE_TXT 0x07 /* light gray on black text */
-
-unsigned int k_printf(char *message, unsigned int line);
-
-/* simple kernel written in C */
-void k_main() 
-{
-	k_printf("Hello, world! Welcome to my kernel.", 0);
-};
-
-/* k_printf : the message and the line # */
-unsigned int k_printf(char *message, unsigned int line)
-{
-	char *vidmem = (char *) 0xb8000;
-	unsigned int i=0;
-
-	i=(line*80*2);
-
-	while(*message!=0)
-	{
-		if(*message=='\n') // check for a new line
-		{
-			line++;
-			i=(line*80*2);
-			*message++;
-		} else {
-			vidmem[i]=*message;
-			*message++;
-			i++;
-			vidmem[i]=WHITE_TXT;
-			i++;
-		};
-	};
-
-	return(1);
+void k_main() {
+	clear_screen();
+	kprint("Hello, World from VGA driver!\n");
+	init_keyboard();
 }
