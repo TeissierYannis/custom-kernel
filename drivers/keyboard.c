@@ -1,7 +1,7 @@
 #include "keyboard.h"
 #include "vga.h"
 #include "../cpu/ports.h"
-#include "idt.h" // You need to create this header and its implementation
+#include "../cpu/idt.h"
 
 #define PIC1_COMMAND 0x20
 #define PIC1_DATA 0x21

@@ -2,6 +2,6 @@
 #define SERIAL_H
 
 void init_serial();
-void write_serial(char a);
+void write_serial(char *str);
 
 #endif
