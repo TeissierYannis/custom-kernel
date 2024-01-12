@@ -8,10 +8,15 @@ extern void idt_load();
 
 /* Initialize all the necessary components */
 void init() {
+    write_serial("Initializing components...\n");
     init_serial(); // Initialize serial port for debugging
+    write_serial("Serial port initialized!\n");
     init_idt(); // Initialize the Interrupt Descriptor Table
+    write_serial("IDT initialized!\n");
     init_keyboard(); // Initialize the keyboard
+    write_serial("Keyboard initialized!\n");
     clear_screen(); // Clear the VGA screen
+    write_serial("VGA screen cleared!\n");
 }
 
 /* Kernel's main function */

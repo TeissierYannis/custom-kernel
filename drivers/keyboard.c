@@ -2,6 +2,7 @@
 #include "vga.h"
 #include "../cpu/ports.h"
 #include "../cpu/idt.h"
+#include "serial.h"
 
 #define PIC1_COMMAND 0x20
 #define PIC1_DATA 0x21
@@ -40,17 +41,19 @@ void remap_pic() {
 
 /* Initialize the keyboard by setting up its interrupt handler */
 void init_keyboard() {
+    write_serial("Initializing keyboard...\n");
     remap_pic();
-
-    /* Set the keyboard interrupt handler in the IDT */
-    set_idt_gate(KEYBOARD_IRQ, (unsigned int)keyboard_interrupt_handler);
+    write_serial("PIC remapped!\n");
 
     /* Enable keyboard interrupts (IRQ1) */
+    write_serial("Enabling keyboard interrupts...\n");
     outportb(PIC1_DATA, inportb(PIC1_DATA) & ~(1 << KEYBOARD_IRQ));
+    write_serial("Keyboard interrupts enabled!\n");
 }
 
 /* Keyboard scancode mapping to ASCII characters. */
 char scancode_to_char(unsigned char scancode) {
+    write_serial("Scancode: ");
     static char scancode_map[] = {
         0,  27, '1', '2',  '3', '4', '5', '6',  '7', '8', /* 9 */
         '9', '0', '-', '=', '\b', /* Backspace */
@@ -72,17 +75,23 @@ char scancode_to_char(unsigned char scancode) {
         return scancode_map[scancode];
     }
 
+    write_serial("Unknown scancode\n");
+
     return 0;
 }
 
 void keyboard_handler() {
     unsigned char scancode = inportb(KEYBOARD_DATA_PORT);
+    write_serial("Keyboard interrupt received\n");
 
     if (scancode < 0x80) {  // Ignore key release for now
         char ascii = scancode_to_char(scancode);
         if (ascii) {
             char str[2] = {ascii, '\0'};  // Convert to string
             kprint(str);  // Print the character using your VGA driver
+            write_serial("Key pressed: ");
+            write_serial(str);  // Print the pressed key to the serial port
+            write_serial("\n");
         }
     }
 }
