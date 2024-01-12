@@ -1,37 +1,35 @@
 #include "idt.h"
 
-/* Forward declaration of the keyboard interrupt handler. */
+/* Use this function to set an entry in the IDT. Alot simpler
+*  than twiddling with the GDT ;) */
+void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags)
+{
+    /* The interrupt routine's base address */
+    idt[num].base_lo = (base & 0xFFFF);
+    idt[num].base_hi = (base >> 16) & 0xFFFF;
 
-/* Declare an array of IDT entries */
-idt_entry_t idt[IDT_SIZE];
-idt_ptr_t idt_ptr;
-
-/* Function to set an entry in the IDT */
-void set_idt_gate(int n, uint32_t handler) {
-    write_serial("Setting IDT gate...\n");
-    idt[n].base_lo = handler & 0xFFFF;
-    idt[n].base_hi = (handler >> 16) & 0xFFFF;
-    idt[n].sel = 0x08;  // Segment selector set to kernel code segment
-    idt[n].always0 = 0;
-    idt[n].flags = 0x8E;  // Present, ring 0, '32-bit interrupt gate'
-    write_serial("IDT gate set!\n");
+    /* The segment or 'selector' that this IDT entry will use
+    *  is set here, along with any access flags */
+    idt[num].sel = sel;
+    idt[num].always0 = 0;
+    idt[num].flags = flags;
 }
 
-/* Function to load the IDT */
-extern void idt_load();  // Implemented in assembly
+/* Installs the IDT */
+void idt_install()
+{
+    write_serial("Installing IDT\n");
+    /* Sets the special IDT pointer up, just like in 'gdt.c' */
+    idtp.limit = (sizeof (struct idt_entry) * 256) - 1;
+    idtp.base = &idt;
 
-void init_idt() {
-    write_serial("Initializing IDT...\n");
-    idt_ptr.limit = sizeof(idt_entry_t) * IDT_SIZE - 1;
-    idt_ptr.base = (uint32_t)&idt;
-    write_serial("IDT pointer initialized!\n");
+    /* Clear out the entire IDT, initializing it to zeros */
+    memset(&idt, 0, sizeof(struct idt_entry) * 256);
 
-    // Set up IDT entries here
-    write_serial("Setting up IDT entries...\n");
+    /* Add any new ISRs to the IDT here using idt_set_gate */
 
-    write_serial("IDT entries set!\n");
-
-    write_serial("Loading IDT...\n");
-    idt_load();  // Load the IDT
-    write_serial("IDT loaded!\n");
+    /* Points the processor's internal register to the new IDT */
+    write_serial("Loading IDT\n");
+    idt_load();
+    write_serial("IDT Installed\n");
 }

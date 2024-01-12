@@ -7,8 +7,10 @@ section .text
 
 global start
 extern k_main
+extern idt_load
 
 start:
 	cli
 	call k_main
+	;call idt_load
 	hlt
