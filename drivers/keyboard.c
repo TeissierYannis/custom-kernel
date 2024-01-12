@@ -1,5 +1,6 @@
 #include "keyboard.h"
-#include "ports.h"
+#include "vga.h"
+#include "../cpu/ports.h"
 #include "idt.h" // You need to create this header and its implementation
 
 #define PIC1_COMMAND 0x20
@@ -48,18 +49,6 @@ void init_keyboard() {
     outportb(PIC1_DATA, inportb(PIC1_DATA) & ~(1 << KEYBOARD_IRQ));
 }
 
-void keyboard_handler() {
-    unsigned char scancode = inportb(KEYBOARD_DATA_PORT);
-
-    if (scancode < 0x80) {  // Ignore key release for now
-        char ascii = scancode_to_char(scancode);
-        if (ascii) {
-            char str[2] = {ascii, '\0'};  // Convert to string
-            kprint(str);  // Print the character using your VGA driver
-        }
-    }
-}
-
 /* Keyboard scancode mapping to ASCII characters. */
 char scancode_to_char(unsigned char scancode) {
     static char scancode_map[] = {
@@ -84,4 +73,16 @@ char scancode_to_char(unsigned char scancode) {
     }
 
     return 0;
+}
+
+void keyboard_handler() {
+    unsigned char scancode = inportb(KEYBOARD_DATA_PORT);
+
+    if (scancode < 0x80) {  // Ignore key release for now
+        char ascii = scancode_to_char(scancode);
+        if (ascii) {
+            char str[2] = {ascii, '\0'};  // Convert to string
+            kprint(str);  // Print the character using your VGA driver
+        }
+    }
 }

@@ -13,10 +13,13 @@ myos.iso: kernel.bin
 	grub-mkrescue -o ./output/myos.iso isodir
 
 kernel.bin: boot.o kernel.o vga.o keyboard.o
-	$(LD) $(LDFLAGS) -T linker.ld -o kernel.bin boot.o kernel.o vga.o keyboard.o
+	$(LD) $(LDFLAGS) -T linker.ld -o kernel.bin boot.o idt_load.o kernel.o vga.o keyboard.o ports.o
 
 boot.o: boot.asm
 	$(ASM) $(ASMFLAGS) boot.asm -o boot.o
+
+idt_load.o: idt_load.asm
+	$(ASM) $(ASMFLAGS) idt_load.asm -o idt_load.o
 
 kernel.o: kernel.c drivers/vga.h drivers/keyboard.h
 	$(CC) $(CFLAGS) -c kernel.c -o kernel.o
@@ -27,7 +30,10 @@ vga.o: drivers/vga.c drivers/vga.h
 keyboard.o: drivers/keyboard.c drivers/keyboard.h
 	$(CC) $(CFLAGS) -c drivers/keyboard.c -o keyboard.o
 
+ports.o: drivers/ports.c drivers/ports.h
+	$(CC) $(CFLAGS) -c drivers/ports.c -o ports.o
+
 clean:
-	rm -rf *.bin *.o isodir/boot/kernel.bin ./output/myos.iso */*.o
+	rm -rf *.bin *.o ./isodir/boot/kernel.bin ./output/myos.iso */*.o
 
 .PHONY: all clean
