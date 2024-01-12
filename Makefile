@@ -12,8 +12,8 @@ myos.iso: kernel.bin
 	cp grub.cfg isodir/boot/grub
 	grub-mkrescue -o ./output/myos.iso isodir
 
-kernel.bin: boot.o kernel.o vga.o keyboard.o ports.o idt_load.o linker.ld
-	$(LD) $(LDFLAGS) -T linker.ld -o kernel.bin boot.o idt_load.o kernel.o vga.o keyboard.o ports.o
+kernel.bin: boot.o kernel.o vga.o keyboard.o ports.o idt_load.o linker.ld keyboard_handler.o
+	$(LD) $(LDFLAGS) -T linker.ld -o kernel.bin boot.o idt_load.o kernel.o vga.o keyboard.o ports.o keyboard_handler.o
 
 boot.o: boot.asm
 	$(ASM) $(ASMFLAGS) boot.asm -o boot.o
@@ -21,8 +21,8 @@ boot.o: boot.asm
 idt_load.o: idt_load.asm
 	$(ASM) $(ASMFLAGS) idt_load.asm -o idt_load.o
 
-keyboard.o: keyboard.asm
-	$(ASM) $(ASMFLAGS) keyboard.asm -o keyboard.o
+keyboard_handler.o: keyboard_handler.asm
+	$(ASM) $(ASMFLAGS) keyboard_handler.asm -o keyboard_handler.o
 
 kernel.o: kernel.c drivers/vga.h drivers/keyboard.h
 	$(CC) $(CFLAGS) -c kernel.c -o kernel.o
