@@ -22,6 +22,7 @@ void init_idt() {
 
     // Set up IDT entries here
     set_idt_gate(0x21, (uint32_t)keyboard_handler);
+    set_idt_gate(33, (uint32_t)keyboard_interrupt_handler);
 
     idt_load();  // Load the IDT
 }
