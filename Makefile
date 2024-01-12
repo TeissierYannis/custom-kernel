@@ -5,39 +5,69 @@ LDFLAGS = -m elf_i386
 ASM = nasm
 ASMFLAGS = -f elf32
 
-all: myos.iso
+all: pre-build myos.iso
 
-myos.iso: kernel.bin
-	cp kernel.bin isodir/boot
-	cp grub.cfg isodir/boot/grub
+pre-build:
+	mkdir -p isodir/boot/grub
+	mkdir -p output
+	mkdir -p build
+
+post-build:
+	rm -rf build isodir
+
+myos.iso: ./build/kernel.bin
+	cp ./build/kernel.bin isodir/boot
+	cp ./src/config/grub.cfg isodir/boot/grub
 	mkdir -p output
 	grub-mkrescue -o ./output/myos.iso isodir
 
-kernel.bin: boot.o kernel.o vga.o ports.o idt_load.o serial.o idt.o
-	$(LD) $(LDFLAGS) -T linker.ld -o kernel.bin boot.o kernel.o vga.o ports.o idt_load.o serial.o idt.o
+# From o files
 
-boot.o: boot.asm
-	$(ASM) $(ASMFLAGS) boot.asm -o boot.o
+./build/kernel.bin: ./build/start.o ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/gdt.o ./build/idt_c.o ./build/idt.o ./build/isrs_c.o ./build/isrs.o ./build/irq_c.o ./build/irq.o ./build/timer.o ./build/keyboard.o
+	$(LD) $(LDFLAGS) -T ./src/linker/link.ld -o ./build/kernel.bin ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/idt_c.o ./build/irq_c.o ./build/isrs_c.o ./build/keyboard.o ./build/start.o ./build/gdt.o ./build/idt.o ./build/isrs.o ./build/irq.o ./build/timer.o
 
-idt_load.o: idt_load.asm
-	$(ASM) $(ASMFLAGS) idt_load.asm -o idt_load.o
+# C files
+./build/kernel.o: ./src/core/kernel.c
+	$(CC) $(CFLAGS) -c src/core/kernel.c -o ./build/kernel.o
 
-kernel.o: kernel.c drivers/vga.h drivers/serial.h cpu/idt.h
-	$(CC) $(CFLAGS) -c kernel.c -o kernel.o
+./build/screen.o: ./src/core/drivers/screen.c
+	$(CC) $(CFLAGS) -c src/core/drivers/screen.c -o ./build/screen.o
 
-vga.o: drivers/vga.c drivers/vga.h
-	$(CC) $(CFLAGS) -c drivers/vga.c -o vga.o
+./build/keyboard.o: ./src/core/drivers/keyboard.c
+	$(CC) $(CFLAGS) -c src/core/drivers/keyboard.c -o ./build/keyboard.o
 
-serial.o: drivers/serial.c drivers/serial.h
-	$(CC) $(CFLAGS) -c drivers/serial.c -o serial.o
+./build/gdt_c.o: ./src/core/cpu/gdt.c
+	$(CC) $(CFLAGS) -c src/core/cpu/gdt.c -o ./build/gdt_c.o
 
-idt.o: cpu/idt.c cpu/idt.h
-	$(CC) $(CFLAGS) -c cpu/idt.c -o idt.o
+./build/idt_c.o: ./src/core/cpu/idt.c
+	$(CC) $(CFLAGS) -c src/core/cpu/idt.c -o ./build/idt_c.o
 
-ports.o: cpu/ports.c cpu/ports.h
-	$(CC) $(CFLAGS) -c cpu/ports.c -o ports.o
+./build/isrs_c.o: ./src/core/cpu/isrs.c
+	$(CC) $(CFLAGS) -c src/core/cpu/isrs.c -o ./build/isrs_c.o
+
+./build/irq_c.o: ./src/core/cpu/irq.c
+	$(CC) $(CFLAGS) -c src/core/cpu/irq.c -o ./build/irq_c.o
+
+./build/timer.o: ./src/core/cpu/timer.c
+	$(CC) $(CFLAGS) -c src/core/cpu/timer.c -o ./build/timer.o
+
+# AS
+./build/start.o: ./src/asm/start.asm
+	$(ASM) $(ASMFLAGS) ./src/asm/start.asm -o ./build/start.o
+
+./build/gdt.o: ./src/asm/gdt.asm
+	$(ASM) $(ASMFLAGS) ./src/asm/gdt.asm -o ./build/gdt.o
+
+./build/idt.o: ./src/asm/idt.asm
+	$(ASM) $(ASMFLAGS) ./src/asm/idt.asm -o ./build/idt.o
+
+./build/isrs.o: ./src/asm/isrs.asm
+	$(ASM) $(ASMFLAGS) ./src/asm/isrs.asm -o ./build/isrs.o
+
+./build/irq.o: ./src/asm/irq.asm
+	$(ASM) $(ASMFLAGS) ./src/asm/irq.asm -o ./build/irq.o
 
 clean:
-	rm -rf *.bin *.o ./isodir/boot/kernel.bin ./output/myos.iso */*.o
+	rm -rf ./output ./isodir ./build
 
 .PHONY: all clean
