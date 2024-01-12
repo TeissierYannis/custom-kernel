@@ -1,5 +1,4 @@
 #include "drivers/vga.h"
-#include "drivers/keyboard.h"
 #include "drivers/serial.h"
 #include "cpu/idt.h"
 
@@ -13,7 +12,6 @@ void init() {
     write_serial("Serial port initialized!\n");
     init_idt(); // Initialize the Interrupt Descriptor Table
     write_serial("IDT initialized!\n");
-    init_keyboard(); // Initialize the keyboard
     write_serial("Keyboard initialized!\n");
     clear_screen(); // Clear the VGA screen
     write_serial("VGA screen cleared!\n");
@@ -26,6 +24,8 @@ void k_main() {
     /* Now you can start using the components */
     kprint("Hello, World from VGA!\n");
     write_serial("Hello, Serial Port!\n");
+
+    //asm volatile("int $0x30");
 }
 
 /* You will need to link `idt_load` from your assembly code */
