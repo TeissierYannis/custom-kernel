@@ -1,4 +1,8 @@
 #include "idt.h"
+#include "../drivers/keyboard.h"
+
+/* Forward declaration of the keyboard interrupt handler. */
+extern void keyboard_interrupt_handler();
 
 /* Declare an array of IDT entries */
 idt_entry_t idt[IDT_SIZE];
@@ -22,7 +26,7 @@ void init_idt() {
 
     // Set up IDT entries here
     set_idt_gate(0x21, (uint32_t)keyboard_handler);
-    set_idt_gate(33, (uint32_t)keyboard_interrupt_handler);
+    set_idt_gate(33, (unsigned int)keyboard_interrupt_handler);
 
     idt_load();  // Load the IDT
 }

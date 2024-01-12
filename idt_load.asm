@@ -7,4 +7,3 @@ idt_load:
     lidt [idt_ptr]  ; Load the IDT
     ret
 
-.section .note.GNU-stack,"",@progbits
