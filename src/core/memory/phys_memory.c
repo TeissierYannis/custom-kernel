@@ -50,11 +50,11 @@ void init_bitmap(multiboot_info_t *mbt) {
     char buffer[256];
     unsigned int i;
 
-    // Initialize all blocks as free
+    // Initialize bitmap to all blocks as used
     for (i = 0; i < TOTAL_BLOCKS; i++) {
-        free_block(i);
+        alloc_block(i);
     }
-    puts("Initialized all blocks as free.\n");
+    puts("Initialized all blocks as used.\n");
 
     // Process the memory map
     memory_map_t *mmap = (memory_map_t *) mbt->mmap_addr;
@@ -75,7 +75,7 @@ void init_bitmap(multiboot_info_t *mbt) {
 
         if (mmap->type == 1) { // Available memory
             for (i = 0; i < num; i++) {
-                alloc_block(addr / BLOCK_SIZE + i);
+                free_block(addr / BLOCK_SIZE + i);
             }
         }
 
