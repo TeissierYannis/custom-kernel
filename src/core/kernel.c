@@ -196,7 +196,10 @@ void main(unsigned long magic, unsigned long addr)
     setup_paging();
     puts("Done.\n");
 
-    display_memory_map(mbi);
+    puts("Loading memory heap...\n");
+    init_heap();
+    puts("Done.\n");
+
 
     puts("test");
 

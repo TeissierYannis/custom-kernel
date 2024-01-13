@@ -26,7 +26,7 @@ This document outlines the roadmap for the development of a custom operating sys
 
 ### Phase 2: Advanced Memory and Process Management
 - [ ] ** Implement dynamic memory allocation (heap)**
-    - ![Progress](https://progress-bar.dev/50)
+    - ![Progress](https://progress-bar.dev/70)
 - [ ] **File System Implementation**
     - ![Progress](https://progress-bar.dev/0)
 - [ ] **Develop a simple filesystem (e.g., FAT32)**
