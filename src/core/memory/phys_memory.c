@@ -1,10 +1,6 @@
 #include "../headers/system.h"
 #include "../headers/multiboot.h"
 
-#define BLOCK_SIZE 4096
-#define TOTAL_MEMORY 0x1000000
-#define TOTAL_BLOCKS (TOTAL_MEMORY / BLOCK_SIZE)
-
 unsigned char bitmap[TOTAL_BLOCKS / 8];  // Bitmap array
 // Set a bit in the bitmap
 void set_bit(unsigned int bit) {

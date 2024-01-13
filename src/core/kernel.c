@@ -251,6 +251,7 @@ void main(unsigned long magic, unsigned long addr)
     display_memory_map(mbi);
 
     init_bitmap(mbi);
+	setup_paging();
 
 
     __asm__ __volatile__ ("sti");

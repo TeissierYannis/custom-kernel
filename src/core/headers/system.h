@@ -2,6 +2,10 @@
 #define __SYSTEM_H
 #define NULL ((void*)0)
 
+#define BLOCK_SIZE 4096
+#define TOTAL_MEMORY 0x1000000
+#define TOTAL_BLOCKS (TOTAL_MEMORY / BLOCK_SIZE)
+
 typedef unsigned long size_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
