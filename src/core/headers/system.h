@@ -71,12 +71,31 @@ extern void timer_install();
 extern void keyboard_handler(struct regs *r);
 extern void keyboard_install();
 
-/* phy_memory.c */
+/* phys_memory.c */
 extern void set_bit(unsigned int bit);
 extern void clear_bit(unsigned int bit);
 extern unsigned int test_bit(unsigned int bit);
 extern unsigned int first_free();
 extern void alloc_block(unsigned int block);
 extern void free_block(unsigned int block);
+
+/* paging.c */
+extern unsigned int block_to_addr(unsigned int block);
+extern unsigned int virtual_to_physical(unsigned int virtual_addr);
+extern void map_vga_buffer(page_table_t *table);
+extern void setup_paging();
+
+/* page_alloc.c */
+extern void set_page_used(int page);
+extern void set_page_free(int page);
+extern int is_page_free(int page);
+extern int find_free_page();
+extern void* allocate_page();
+extern void free_page(void* page_addr);
+
+/* heap.c */
+extern void* malloc(size_t size);
+extern void free(void* ptr);
+extern void init_heap();
 
 #endif
