@@ -154,105 +154,51 @@ extern void init_bitmap(multiboot_info_t *mbt);
 void main(unsigned long magic, unsigned long addr)
 {
     multiboot_info_t *mbi;
-    char buffer[256];
 
+    if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+        puts("Invalid magic number");
+        return;
+    }
+
+    // Initialize GDT, IDT, ISRs, and IRQs
+    puts("Loading GDT...\n");
     gdt_install();
+    puts("Done.\n");
+    puts("Loading IDT...\n");
     idt_install();
+    puts("Done.\n");
+    puts("Loading ISRS...\n");
     isrs_install();
+    puts("Done.\n");
+    puts("Loading IRQ...\n");
     irq_install();
+    puts("Done.\n");
+    
+    puts("Loading video...\n");
     init_video();
+    puts("Done.\n");
+    puts("Loading timer...\n");
     timer_install();
+    puts("Done.\n");
+    puts("Loading keyboard...\n");
     keyboard_install();
+    puts("Done.\n");
 
-    if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-    {
-        puts ("Invalid magic number");
-        return;
-    }
-    /* Set MBI to the address of the Multiboot information structure.  */
-    mbi = (multiboot_info_t *) addr;
-
-    /* Are mem_* valid?  */
-    if (CHECK_FLAG(mbi->flags, 0)) {
-        itoa(mbi->mem_lower, buffer, 10);
-        puts("mem_lower = ");
-        puts(buffer);
-        puts("KB, mem_upper = ");
-        itoa(mbi->mem_upper, buffer, 10);
-        puts(buffer);
-        puts("KB\n");
+    // Initialize physical memory management
+    if (CHECK_FLAG(mbi->flags, 6)) {
+        puts("Loading bitmap...\n");
+        init_bitmap(mbi);
+        puts("Done.\n");
     }
 
-    /* Is boot_device valid?  */
-    if (CHECK_FLAG(mbi->flags, 1)) {
-        itoa(mbi->boot_device, buffer, 16);  // Convert to hex
-        puts("boot_device = 0x");
-        puts(buffer);
-        puts("\n");
-    }
-
-    /* Are mods_* valid?  */
-    // Modules
-    if (CHECK_FLAG(mbi->flags, 3)) {
-        module_t *mod = (module_t *)mbi->mods_addr;
-        for (int i = 0; i < mbi->mods_count; i++, mod++) {
-            puts("Module start: ");
-            itoa(mod->mod_start, buffer, 16);
-            puts(buffer);
-            puts(", end: ");
-            itoa(mod->mod_end, buffer, 16);
-            puts(buffer);
-            puts(", string: ");
-            puts("\n");
-        }
-    }
-
-    /* Bits 4 and 5 are mutually exclusive!  */
-    if (CHECK_FLAG (mbi->flags, 4) && CHECK_FLAG (mbi->flags, 5))
-    {
-        puts ("Both bits 4 and 5 are set.\n");
-        return;
-    }
-
-    /* Is the symbol table of a.out valid?  */
-    if (CHECK_FLAG(mbi->flags, 4)) {
-        aout_symbol_table_t *aout_sym = &(mbi->u.aout_sym);
-        char buffer[256];
-
-        strcpy(buffer, "aout_symbol_table: tabsize = 0x");
-        itoa(aout_sym->tabsize, buffer + strlen(buffer), 16);
-        strcat(buffer, ", strsize = 0x");
-        itoa(aout_sym->strsize, buffer + strlen(buffer), 16);
-        strcat(buffer, ", addr = 0x");
-        itoa((unsigned)aout_sym->addr, buffer + strlen(buffer), 16);
-        strcat(buffer, "\n");
-
-        puts(buffer);
-    }
-
-    /* Is the section header table of ELF valid?  */
-    if (CHECK_FLAG(mbi->flags, 5)) {
-        elf_section_header_table_t *elf_sec = &(mbi->u.elf_sec);
-        char buffer[256];
-
-        strcpy(buffer, "elf_sec: num = ");
-        itoa(elf_sec->num, buffer + strlen(buffer), 10);
-        strcat(buffer, ", size = 0x");
-        itoa(elf_sec->size, buffer + strlen(buffer), 16);
-        strcat(buffer, ", addr = 0x");
-        itoa((unsigned)elf_sec->addr, buffer + strlen(buffer), 16);
-        strcat(buffer, ", shndx = 0x");
-        itoa(elf_sec->shndx, buffer + strlen(buffer), 16);
-        strcat(buffer, "\n");
-
-        puts(buffer);
-    }
+    // Initialize paging
+    puts("Loading paging...\n");
+    setup_paging();
+    puts("Done.\n");
 
     display_memory_map(mbi);
 
-    init_bitmap(mbi);
-	setup_paging();
-
+    puts("test");
 
     __asm__ __volatile__ ("sti");
 

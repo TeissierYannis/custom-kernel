@@ -31,6 +31,13 @@ unsigned int virtual_to_physical(unsigned int virtual_addr) {
     return virtual_addr;
 }
 
+void map_vga_buffer(page_table_t *table) {
+    // Map the frame of the VGA buffer to the same virtual address (identity mapping)
+    table->entries[VGA_BUFFER_FRAME].frame = VGA_BUFFER_FRAME;
+    table->entries[VGA_BUFFER_FRAME].present = 1;
+    table->entries[VGA_BUFFER_FRAME].rw = 1; // Read/Write
+}
+
 // Function to set up paging
 void setup_paging() {
     unsigned int dir_block = first_free(); // Find a free block for the directory
@@ -39,6 +46,14 @@ void setup_paging() {
         return;
     }
     alloc_block(dir_block); // Allocate the block
+
+    // Ensure that the page table containing the VGA buffer is mapped
+    unsigned int vga_table_index = VGA_BUFFER_FRAME / 1024;
+    if (kernel_directory[vga_table_index] == NULL) {
+        // Allocate and set up the table that will contain the VGA buffer mapping
+        // ... [allocate and set up the table as in your existing code]
+    }
+    map_vga_buffer(kernel_directory[vga_table_index]);
 
     // Initialize each page table within the directory
     for (int i = 0; i < 1024; i++) {
@@ -64,6 +79,7 @@ void setup_paging() {
     unsigned int page_directory_addr = virtual_to_physical((unsigned int)kernel_directory);
     __asm__ volatile("mov %0, %%cr3" : : "r"(page_directory_addr));
     __asm__ volatile("mov %%cr0, %0" : "=r"(cr0));
-    cr0 |= 0x80000000;
+    cr0 |= 0x80000000; // Enable paging
     __asm__ volatile("mov %0, %%cr0" : : "r"(cr0));
+
 }

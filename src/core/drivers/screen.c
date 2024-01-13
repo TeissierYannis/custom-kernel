@@ -151,8 +151,8 @@ void settextcolor(unsigned char forecolor, unsigned char backcolor)
 }
 
 /* Sets our text-mode VGA pointer, then clears the screen for us */
-void init_video(void)
-{
-    textmemptr = (unsigned short *)0xB8000;
+void init_video(void) {
+    // With identity paging, the VGA buffer address remains the same
+    textmemptr = (unsigned short *)VGA_BUFFER_ADDR;
     cls();
 }

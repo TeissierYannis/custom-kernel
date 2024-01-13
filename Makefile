@@ -23,8 +23,8 @@ myos.iso: ./build/kernel.bin
 
 # From o files
 
-./build/kernel.bin: ./build/start.o ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/gdt.o ./build/idt_c.o ./build/idt.o ./build/isrs_c.o ./build/isrs.o ./build/irq_c.o ./build/irq.o ./build/timer.o ./build/keyboard.o ./build/phys_memory.o ./build/paging.o
-	$(LD) $(LDFLAGS) -T ./src/linker/link.ld -o ./build/kernel.bin ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/idt_c.o ./build/irq_c.o ./build/isrs_c.o ./build/keyboard.o ./build/start.o ./build/gdt.o ./build/idt.o ./build/isrs.o ./build/irq.o ./build/timer.o ./build/phys_memory.o ./build/paging.o
+./build/kernel.bin: ./build/start.o ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/gdt.o ./build/idt_c.o ./build/idt.o ./build/isrs_c.o ./build/isrs.o ./build/irq_c.o ./build/irq.o ./build/timer.o ./build/keyboard.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o
+	$(LD) $(LDFLAGS) -T ./src/linker/link.ld -o ./build/kernel.bin ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/idt_c.o ./build/irq_c.o ./build/isrs_c.o ./build/keyboard.o ./build/start.o ./build/gdt.o ./build/idt.o ./build/isrs.o ./build/irq.o ./build/timer.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o
 
 # C files
 ./build/kernel.o: ./src/core/kernel.c
@@ -41,6 +41,9 @@ myos.iso: ./build/kernel.bin
 
 ./build/paging.o: ./src/core/memory/paging.c
 	$(CC) $(CFLAGS) -c src/core/memory/paging.c -o ./build/paging.o
+
+./build/page_alloc.o: ./src/core/memory/page_alloc.c
+	$(CC) $(CFLAGS) -c src/core/memory/page_alloc.c -o ./build/page_alloc.o
 
 ./build/gdt_c.o: ./src/core/cpu/gdt.c
 	$(CC) $(CFLAGS) -c src/core/cpu/gdt.c -o ./build/gdt_c.o

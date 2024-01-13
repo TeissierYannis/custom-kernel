@@ -6,6 +6,12 @@
 #define TOTAL_MEMORY 0x1000000
 #define TOTAL_BLOCKS (TOTAL_MEMORY / BLOCK_SIZE)
 
+#define VGA_BUFFER_ADDR 0xB8000
+#define VGA_BUFFER_FRAME (VGA_BUFFER_ADDR / 0x1000) // Frame number for VGA buffer
+
+#define PAGE_SIZE    4096  // Define the size of a page (typically 4 KB)
+#define TOTAL_PAGES  (TOTAL_MEMORY / PAGE_SIZE)
+
 typedef unsigned long size_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
