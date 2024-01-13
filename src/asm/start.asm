@@ -39,6 +39,8 @@ mboot:
 ; before the 'jmp $'.
 stublet:
     extern main
+    push ebx            ; Pass Multiboot info structure pointer
+    push eax            ; Pass Multiboot magic number
     call main
     jmp $
 

@@ -1,7 +1,21 @@
 #ifndef __SYSTEM_H
 #define __SYSTEM_H
+#define NULL ((void*)0)
 
 typedef unsigned long size_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
+
+/* This defines what the stack looks like after an ISR was running */
+struct regs
+{
+    unsigned int gs, fs, es, ds;      /* pushed the segs last */
+    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
+    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
+    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */
+};
+
 
 /* main.C */
 extern void *memcpy(void *dest, const void *src, size_t count);
@@ -37,15 +51,6 @@ extern void irq_remap(void);
 extern void irq_install();
 extern void irq_handler(struct regs *r);
 
-/* This defines what the stack looks like after an ISR was running */
-struct regs
-{
-    unsigned int gs, fs, es, ds;      /* pushed the segs last */
-    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
-    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
-    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */
-};
-
 /* timer.c */
 extern void timer_wait(int ticks);
 extern void timer_phase(int hz);
@@ -55,4 +60,13 @@ extern void timer_install();
 /* keyboard.c */
 extern void keyboard_handler(struct regs *r);
 extern void keyboard_install();
+
+/* phy_memory.c */
+extern void set_bit(unsigned int bit);
+extern void clear_bit(unsigned int bit);
+extern unsigned int test_bit(unsigned int bit);
+extern unsigned int first_free();
+extern void alloc_block(unsigned int block);
+extern void free_block(unsigned int block);
+
 #endif
