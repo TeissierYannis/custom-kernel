@@ -173,7 +173,7 @@ void main(unsigned long magic, unsigned long addr)
     puts("Loading IRQ...\n");
     irq_install();
     puts("Done.\n");
-    
+
     puts("Loading video...\n");
     init_video();
     puts("Done.\n");
@@ -200,13 +200,54 @@ void main(unsigned long magic, unsigned long addr)
     init_heap();
     puts("Done.\n");
 
+    // Initialize filesystem and disk
+    puts("Initializing filesystem...\n");
+    fs_init();
+    puts("Done.\n");
+
+    puts("Initializing disk...\n");
+    disk_initialize();
+    puts("Done.\n");
+
+    // Create a test file
+    puts("Creating test file...\n");
+    int file = fs_create("testfile");
+    if (file == -1) {
+        puts("Failed to create file.\n");
+    } else {
+        puts("Done.\n");
+    }
+
+    // Write some data to the file
+    puts("Writing data to file...\n");
+    const char* data = "Hello, World!";
+    int bytes_written = fs_write(file, data, strlen(data));
+    if (bytes_written == -1) {
+        puts("Failed to write to file.\n");
+    } else {
+        puts("Done.\n");
+    }
+
+    // Read the data from the file
+    puts("Reading data from file...\n");
+    char buffer[100];
+    int bytes_read = fs_read(file, buffer, sizeof(buffer));
+    if (bytes_read == -1) {
+        puts("Failed to read from file.\n");
+    } else {
+        // Null-terminate the buffer and print it
+        buffer[bytes_read] = '\0';
+        puts("Data read from file: ");
+        puts(buffer);
+        puts("\n");
+    }
+
+    // Close the file
+    fs_close(file);
 
     puts("test");
 
     __asm__ __volatile__ ("sti");
-
-    //    i = 10 / 0;
-    //    putch(i);
 
     for (;;);
 }

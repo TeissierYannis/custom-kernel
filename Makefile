@@ -23,8 +23,8 @@ myos.iso: ./build/kernel.bin
 
 # From o files
 
-./build/kernel.bin: ./build/start.o ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/gdt.o ./build/idt_c.o ./build/idt.o ./build/isrs_c.o ./build/isrs.o ./build/irq_c.o ./build/irq.o ./build/timer.o ./build/keyboard.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o ./build/heap.o
-	$(LD) $(LDFLAGS) -T ./src/linker/link.ld -o ./build/kernel.bin ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/idt_c.o ./build/irq_c.o ./build/isrs_c.o ./build/keyboard.o ./build/start.o ./build/gdt.o ./build/idt.o ./build/isrs.o ./build/irq.o ./build/timer.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o ./build/heap.o
+./build/kernel.bin: ./build/start.o ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/gdt.o ./build/idt_c.o ./build/idt.o ./build/isrs_c.o ./build/isrs.o ./build/irq_c.o ./build/irq.o ./build/timer.o ./build/keyboard.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o ./build/heap.o ./build/fs.o ./build/disk.o ./build/util.o
+	$(LD) $(LDFLAGS) -T ./src/linker/link.ld -o ./build/kernel.bin ./build/kernel.o ./build/screen.o ./build/gdt_c.o ./build/idt_c.o ./build/irq_c.o ./build/isrs_c.o ./build/keyboard.o ./build/start.o ./build/gdt.o ./build/idt.o ./build/isrs.o ./build/irq.o ./build/timer.o ./build/phys_memory.o ./build/paging.o ./build/page_alloc.o ./build/heap.o ./build/fs.o ./build/disk.o ./build/util.o
 
 # C files
 ./build/kernel.o: ./src/core/kernel.c
@@ -35,6 +35,12 @@ myos.iso: ./build/kernel.bin
 
 ./build/keyboard.o: ./src/core/drivers/keyboard.c
 	$(CC) $(CFLAGS) -c src/core/drivers/keyboard.c -o ./build/keyboard.o
+
+./build/disk.o: ./src/core/drivers/disk.c
+	$(CC) $(CFLAGS) -c src/core/drivers/disk.c -o ./build/disk.o
+
+./build/fs.o: ./src/core/filesystem/fs.c
+	$(CC) $(CFLAGS) -c src/core/filesystem/fs.c -o ./build/fs.o
 
 ./build/phys_memory.o: ./src/core/memory/phys_memory.c
 	$(CC) $(CFLAGS) -c src/core/memory/phys_memory.c -o ./build/phys_memory.o
@@ -62,6 +68,9 @@ myos.iso: ./build/kernel.bin
 
 ./build/timer.o: ./src/core/cpu/timer.c
 	$(CC) $(CFLAGS) -c src/core/cpu/timer.c -o ./build/timer.o
+
+./build/util.o: ./src/core/util/util.c
+	$(CC) $(CFLAGS) -c src/core/util/util.c -o ./build/util.o
 
 # AS
 ./build/start.o: ./src/asm/start.asm

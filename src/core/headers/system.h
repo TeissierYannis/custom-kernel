@@ -12,6 +12,11 @@
 #define PAGE_SIZE    4096  // Define the size of a page (typically 4 KB)
 #define TOTAL_PAGES  (TOTAL_MEMORY / PAGE_SIZE)
 
+#define SECTOR_SIZE 512
+#define MAX_FILES 100
+#define FILENAME_MAX 255
+#define BLOCK_SIZE 512
+
 typedef unsigned long size_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
@@ -82,7 +87,6 @@ extern void free_block(unsigned int block);
 /* paging.c */
 extern unsigned int block_to_addr(unsigned int block);
 extern unsigned int virtual_to_physical(unsigned int virtual_addr);
-extern void map_vga_buffer(page_table_t *table);
 extern void setup_paging();
 
 /* page_alloc.c */
@@ -97,5 +101,22 @@ extern void free_page(void* page_addr);
 extern void* malloc(size_t size);
 extern void free(void* ptr);
 extern void init_heap();
+
+/* disk.c */
+extern void disk_init();
+extern void disk_read_sector(unsigned int sector, unsigned char* buffer);
+extern void disk_write_sector(unsigned int sector, const unsigned char* buffer);
+
+/* fs.c */
+extern void fs_initialize();
+extern int fs_create(const char* filename);
+extern int fs_open(const char* filename);
+extern int fs_read(int file, char* buf, int nbytes);
+extern int fs_write(int file, const char* buf, int nbytes);
+extern void fs_close(int file);
+
+/* util.c */
+extern int strcmp(const char *s1, const char *s2);
+extern char *strncpy(char *dest, const char *src, size_t n);
 
 #endif
