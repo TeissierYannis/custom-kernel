@@ -4,6 +4,13 @@
 #define MULTIBOOT_BOOTLOADER_MAGIC 0x2BADB002
 #define CHECK_FLAG(flags,bit)	((flags) & (1 << (bit)))
 
+// Define a simple function for a test process
+void test_process() {
+    timer_wait(30);
+    puts("This is a test process!\n");
+    while (1); // Infinite loop for the test process
+}
+
 void *memcpy(void *dest, const void *src, size_t count)
 {
     const char *sp = (const char *)src;
@@ -160,6 +167,8 @@ void main(unsigned long magic, unsigned long addr)
         return;
     }
 
+    //initialize_process_management();
+
     // Initialize GDT, IDT, ISRs, and IRQs
     puts("Loading GDT...\n");
     gdt_install();
@@ -245,9 +254,15 @@ void main(unsigned long magic, unsigned long addr)
     // Close the file
     fs_close(file);
 
+    // Create a test process
+    //create_process(test_process);
+
     puts("test");
 
     __asm__ __volatile__ ("sti");
 
-    for (;;);
+    for (;;) {
+        // Implement your scheduler or other logic here
+        schedule();
+    }
 }

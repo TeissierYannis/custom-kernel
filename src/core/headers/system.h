@@ -15,7 +15,8 @@
 #define SECTOR_SIZE 512
 #define MAX_FILES 100
 #define FILENAME_MAX 255
-#define BLOCK_SIZE 512
+
+#define MAX_THREADS 100
 
 typedef unsigned long size_t;
 typedef unsigned int uint32_t;
@@ -118,5 +119,57 @@ extern void fs_close(int file);
 /* util.c */
 extern int strcmp(const char *s1, const char *s2);
 extern char *strncpy(char *dest, const char *src, size_t n);
+
+/* processes.c */
+// Context structure
+typedef struct {
+    unsigned int esp, ebp, eip, eflags, eax, ebx, ecx, edx;
+} context_t;
+
+// Process and thread states
+typedef enum {
+    RUNNING,
+    READY,
+    BLOCKED
+} state_t;
+
+// Thread structure
+typedef struct {
+    unsigned int id;
+    state_t state;
+    context_t context;
+} thread_t;
+
+
+// Process structure
+typedef struct {
+    unsigned int id;
+    state_t state;
+    context_t context;
+    thread_t *threads[MAX_THREADS];
+    int thread_count;
+} process_t;
+
+extern void create_process(void (*start_function)());
+extern void terminate_process(unsigned int id);
+extern void create_thread(process_t *process, void (*start_function)());
+extern void terminate_thread(process_t *process, unsigned int id);
+extern void switch_context(context_t *old_context, context_t *new_context);
+extern void schedule();
+extern thread_t *find_next_ready_thread(void);
+extern void set_eip(unsigned int eip);
+extern void set_ebp(unsigned int ebp);
+extern void set_esp(unsigned int esp);
+extern unsigned int get_eip();
+extern unsigned int get_ebp();
+extern unsigned int get_esp();
+extern thread_t *find_thread_by_id(process_t *process, unsigned int id);
+extern void add_thread_to_process(process_t *process, thread_t *thread);
+extern unsigned int generate_new_thread_id();
+extern void remove_process_from_list(process_t *process);
+extern process_t *find_process_by_id(unsigned int id);
+extern void add_process_to_list(process_t *process);
+extern unsigned int generate_new_process_id();
+extern void remove_thread_from_process(process_t *process, thread_t *thread);
 
 #endif

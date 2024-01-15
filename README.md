@@ -32,7 +32,7 @@ This document outlines the roadmap for the development of a custom operating sys
 - [ ] **Develop a simple filesystem (e.g., FAT32)**
     - ![Progress](https://progress-bar.dev/0)
 - [ ] **Implement basic multitasking (processes and threads)**
-    - ![Progress](https://progress-bar.dev/0)
+    - ![Progress](https://progress-bar.dev/50)
 - [ ] **User mode and system calls implementation**
     - ![Progress](https://progress-bar.dev/0)
 ### Phase 3: Networking and Kubernetes Support
