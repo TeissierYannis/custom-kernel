@@ -16,6 +16,7 @@ extern void *memset(void *dest, char val, size_t count);
 #ifdef memsetw
 extern unsigned short *memsetw(unsigned short *dest, unsigned short val, size_t count);
 #endif
+extern char* strstr(char* str, char* substr);
 extern int memcmp(const void *s1, const void *s2, size_t n);
 extern size_t strlen(const char *str);
 extern unsigned char inportb (unsigned short _port);

@@ -28,6 +28,31 @@ void log_serial_hex(unsigned int n) {
     log_serial(str);
 }
 
+void log_serial_int(char* format, int value) {
+    char str[12];  // Buffer to hold the string representation of the integer
+    itoa(value, str, 10);
+
+    // Replace the format specifier with the string representation of the integer
+    char* p = strstr(format, "%d");
+    if (p != NULL) {
+        *p = '\0';  // Null-terminate the format string at the position of the format specifier
+        log_serial(format);
+        log_serial(str);
+        log_serial(p + 2);  // Skip the format specifier and log the rest of the format string
+    }
+}
+
+void log_serial_str(char* format, char* value) {
+    // Replace the format specifier with the string
+    char* p = strstr(format, "%s");
+    if (p != NULL) {
+        *p = '\0';  // Null-terminate the format string at the position of the format specifier
+        log_serial(format);
+        log_serial(value);
+        log_serial(p + 2);  // Skip the format specifier and log the rest of the format string
+    }
+}
+
 void log_serial(char* message) {
     for (int i = 0; i < strlen(message); i++) {
         write_serial(message[i]);

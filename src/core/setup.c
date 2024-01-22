@@ -1,5 +1,13 @@
 #include "./headers/system.h"
 
+void welcome() {
+    puts("==================================================\n");
+    puts("=                                                =\n");
+    puts("=              Welcome to 64-bit OS!             =\n");
+    puts("=                                                =\n");
+    puts("==================================================\n");
+}
+
 int setup(unsigned long magic, unsigned long addr) {
     init_serial();
 
@@ -18,4 +26,9 @@ int setup(unsigned long magic, unsigned long addr) {
     init_video();
     timer_install();
     keyboard_install();
+
+
+
+    // Welcome message
+    welcome();
 }

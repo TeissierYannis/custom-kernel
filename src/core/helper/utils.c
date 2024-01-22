@@ -123,3 +123,28 @@ char* strcpy(char *dest, const char *src) {
 
     return dest_orig;  // Return the original pointer to dest
 }
+
+char* strstr(char* str, char* substr) {
+    if (!*substr) {
+        return str;
+    }
+    char* p1 = str, *p2 = substr;
+    char* p1Adv = str;
+    while (*++p2) {
+        p1Adv++;
+    }
+    while (*p1Adv) {
+        char* p1Begin = p1;
+        p2 = substr;
+        while (*p1 && *p2 && *p1 == *p2) {
+            p1++;
+            p2++;
+        }
+        if (!*p2) {
+            return p1Begin;
+        }
+        p1 = p1Begin + 1;
+        p1Adv++;
+    }
+    return NULL;
+}
