@@ -75,3 +75,24 @@ void gdt_install()
     /* Flush out the old GDT and install the new changes! */
     gdt_flush();
 }
+
+void gdt_uninstall() {
+    // Set up a minimal GDT with a flat memory model
+    // Flat Code Segment
+    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);  // 0x9A = Present, Ring 0, Code Segment
+    // Flat Data Segment
+    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);  // 0x92 = Present, Ring 0, Data Segment
+
+    // Update the GDT register
+    gdt_flush();
+
+    // Reset segment registers (example using inline assembly, adjust as necessary)
+    __asm__ volatile (
+        "movw $0x10, %ax\n\t"  // 0x10 = selector for the data segment
+        "movw %ax, %ds\n\t"
+        "movw %ax, %es\n\t"
+        "movw %ax, %fs\n\t"
+        "movw %ax, %gs\n\t"
+        "movw %ax, %ss\n\t"
+    );
+}

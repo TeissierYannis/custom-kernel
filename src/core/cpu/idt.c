@@ -27,6 +27,7 @@ struct idt_ptr idtp;
 
 /* This exists in 'start.asm', and is used to load our IDT */
 extern void idt_load();
+extern void syscall_handler();
 
 /* Use this function to set an entry in the IDT. Alot simpler
 *  than twiddling with the GDT ;) */
@@ -53,8 +54,22 @@ void idt_install()
     /* Clear out the entire IDT, initializing it to zeros */
     memset(&idt, 0, sizeof(struct idt_entry) * 256);
 
-    /* Add any new ISRs to the IDT here using idt_set_gate */
-
     /* Points the processor's internal register to the new IDT */
+    idt_load();
+}
+
+void idt_uninstall() {
+    // Reset all entries in the IDT to a default state (e.g., all zeros)
+    memset(&idt, 0, sizeof(struct idt_entry) * 256);
+
+    // Optionally, set up a minimal IDT configuration here
+    // For example, you might set up just the first entry to catch Divide By Zero
+    // idt_set_gate(0, (unsigned long)minimal_handler, 0x08, 0x8E);
+
+    // Update the IDT pointer to point to the reset IDT
+    idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
+    idtp.base = &idt;
+
+    // Reload the IDT with the new configuration
     idt_load();
 }

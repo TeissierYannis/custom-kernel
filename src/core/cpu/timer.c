@@ -3,7 +3,9 @@
 /* This will keep track of how many ticks that the system
 *  has been running for */
 int timer_ticks = 0;
-
+int seconds = 0;
+int minutes = 0;
+int hours = 0;
 /* This will continuously loop until the given time has
 *  been reached */
 void timer_wait(int ticks)
@@ -30,13 +32,31 @@ void timer_phase(int hz)
 void timer_handler(struct regs *r)
 {
     /* Increment our 'tick count' */
-    timer_ticks++;
 
     /* Every 18 clocks (approximately 1 second), we will
     *  display a message on the screen */
     if (timer_ticks % 18 == 0)
     {
+        seconds++;
+        if (seconds >= 60)
+        {
+            minutes++;
+            seconds = 0;
+        }
+        if (minutes >= 60)
+        {
+            hours++;
+            minutes = 0;
+        }
     }
+}
+
+void get_time(char* buffer) {
+    itoa(hours, buffer, 10);
+    strcat(buffer, ":");
+    itoa(minutes, buffer + strlen(buffer), 10);
+    strcat(buffer, ":");
+    itoa(seconds, buffer + strlen(buffer), 10);
 }
 
 /* Sets up the system clock by installing the timer handler

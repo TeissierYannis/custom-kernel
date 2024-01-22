@@ -19,6 +19,8 @@
 
 /* The magic number for the Multiboot header.  */
 #define MULTIBOOT_HEADER_MAGIC		0x1BADB002
+#define MULTIBOOT_BOOTLOADER_MAGIC 0x2BADB002
+#define CHECK_FLAG(flags,bit)	((flags) & (1 << (bit)))
 
 /* The flags for the Multiboot header.  */
 #ifdef __ELF__
